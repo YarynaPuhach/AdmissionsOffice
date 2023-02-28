@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	  xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+
+<main th:fragment="commonLogin(title, path, isLoginForm)">
+    <h3>[[${title}]]</h3>
+	<div th:if="${message}" th:class="|alert alert-${messageType}|" role="alert">
+		[[${message}]]
+	</div>
+	<div th:if="${param.error}" class="alert alert-danger" role="alert">
+      	Введены некорректыне данные!
+    </div>
+    <div th:if="${param.logout}" class="alert alert-info" role="alert">
+        Вы только что вышли из программы!
+    </div>
+    <form th:action="${path}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <div class="form-group row" th:if="${!isLoginForm}">
+        	<label class="col-sm-2 col-form-label">Имя: </label>
+        	<div class="col-sm-6">
+        		<input th:class="${firstNameError}?'form-control is-invalid':'form-control'"
+					type="text" name="firstName" th:value="${user}?${user.firstName}" placeholder="Имя"/>
+        		<div th:if="${firstNameError}" class="invalid-feedback" th:text="${firstNameError}"></div>
+        	</div>
+        </div>
+        <div class="form-group row" th:if="${!isLoginForm}">
+        	<label class="col-sm-2 col-form-label">Фамилия: </label>
+        	<div class="col-sm-6">
+        		<input th:class="${lastNameError}?'form-control is-invalid':'form-control'"
+					type="text" name="lastName" th:value="${user}?${user.lastName}" placeholder="Фамилия"/>
+        		<div th:if="${lastNameError}" class="invalid-feedback" th:text="${lastNameError}"></div>
+        	</div>
+        </div>
+        <div class="form-group row">
+        	<label class="col-sm-2 col-form-label">Email: </label>
+        	<div class="col-sm-6">
+        		<input th:class="${emailError}?'form-control is-invalid':'form-control'"
+					type="text" th:name="${isLoginForm}?username:email" th:value="${user}?${user.email}" placeholder="Email"/>
+        		<div th:if="${emailError}" class="invalid-feedback" th:text="${emailError}"></div>
+        	</div>
+        </div>        
+        <div class="form-group row">
+        	<label class="col-sm-2 col-form-label">Пароль: </label>
+        	<div class="col-sm-6">
+        		<input th:class="${passwordError}?'form-control is-invalid':'form-control'"
+					type="password" name="password" placeholder="Пароль"/>
+        		<div th:if="${passwordError}" class="invalid-feedback" th:text="${passwordError}"></div>
+        	</div>
+        </div>
+        <div class="form-group row" th:if="${!isLoginForm}">
+        	<label class="col-sm-2 col-form-label">Повторите пароль: </label>
+        	<div class="col-sm-6">
+        		<input th:class="${confirmPasswordError}?'form-control is-invalid':'form-control'"
+					type="password" name="confirmPassword" placeholder="Повторите пароль"/>
+        		<div th:if="${confirmPasswordError}" class="invalid-feedback" th:text="${confirmPasswordError}"></div>
+        	</div>
+        </div>
+        <div class="form-check" th:if="${isLoginForm}">
+        	<input class="form-check-input" type="checkbox" name="remember-me" id="remember-me"/>
+        	<label class="form-check-label" for="remember-me">Запомнить меня</label>
+        </div>			
+        <div class="col-sm-6" th:if="${!isLoginForm}">
+            <div class="g-recaptcha" data-sitekey="6LdnEL4UAAAAAM6h1YjSYgcOdN6BSAZBhU8pyM-m"></div>
+            <div th:if="${captchaError}" class="alert alert-danger" role="alert" style="width: 302px;" th:text="${captchaError}"></div>
+        </div>
+        <button class="btn btn-primary mt-3" type="submit">[[${isLoginForm}?Войти:Регистрация]]</button>
+        <div><a th:if="${isLoginForm}" href="/registration">Создать нового пользователя</a></div>
+    </form>
+</main>
+
+</html>
