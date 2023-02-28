@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	  xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+
+<main th:fragment="commonApplication(title, path, isEditForm)">
+	<h3>[[${title}]]</h3>
+	<div th:if="${message}" class="alert alert-danger" role="alert">
+		[[${message}]]
+	</div>
+	<div th:if="${isEditForm} AND ${aplication.ratingList.rejectionMessage}" class="alert alert-danger" role="alert">
+		<b>ADMIN: </b>[[${aplication.ratingList.rejectionMessage}]]
+	</div>
+	<form th:object="${aplication}" th:action="${path}" method="post" enctype="multipart/form-data">
+		<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+		<input type="hidden" th:name="applicant" th:value="${session.user.applicant.id}" sec:authorize="hasAuthority('USER')"/>
+		<input type="hidden" th:name="applicant" th:value="${aplication.applicant.id}" sec:authorize="hasAuthority('ADMIN')"/>
+		<div class="form-group row" sec:authorize="hasAuthority('ADMIN')">
+			<label class="col-sm-2 col-form-label">Enrollee: </label>
+			<div class="col-sm-6">
+				<input class="form-control" type="text" name="aplicantName" th:value="|${aplication.applicant.user.firstName} ${aplication.applicant.user.lastName}|" readonly/>
+			</div>
+		</div>
+		<div class="form-group row">
+			<label class="col-sm-2 col-form-label">Speciality: </label>
+			<div class="col-sm-6">
+				<select th:class="${specialityError}?'form-control is-invalid':'form-control'"
+					name="speciality" th:onchange="viewSubjectsBySpeciality()"> 
+					<option value="" th:disabled="${isEditForm}">Speciality</option>
+					<option th:each="speciality : ${specialities}" th:value="${speciality.id}" th:text="${speciality.title}"
+						th:selected="${isEditForm}?${speciality.id.equals(aplication.speciality.id)}"
+						th:disabled="${isEditForm}?${!speciality.id.equals(aplication.speciality.id)}">
+					</option>
+				</select>
+				<div th:if="${specialityError}" class="invalid-feedback" th:text="${specialityError}"></div>
+			</div>
+		</div>
+		<div th:if="${!isEditForm}" id="subjects"></div>
+		<div th:if="${isEditForm}">
+			<h5>Scores:</h5>
+			<div th:each="znoMark : *{znoMarks}">
+				<div class="form-group row">
+					<label class="col-sm-2 col-form-label">[[${znoMark.key.title}]]: </label>
+					<div class="col-sm-6" sec:authorize="hasAuthority('USER')">
+						<input th:class="${subject__${znoMark.key.id}__Error}?'form-control is-invalid':'form-control'"
+							type="text" th:name="|subject${znoMark.key.id}|" th:value="${znoMark.value}" th:placeholder="${znoMark.key.title}"/>
+						<div th:if="${subject__${znoMark.key.id}__Error}" class="invalid-feedback" th:text="${subject__${znoMark.key.id}__Error}"></div>
+					</div>
+					<div class="col-sm-6" sec:authorize="hasAuthority('ADMIN')">
+						<input class="form-control" type="text" th:name="|subject${znoMark.key.id}|" th:value="${znoMark.value}" readonly/>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="form-group row">
+			<label class="col-sm-2 col-form-label">Average score of the certificate: </label>
+			<div class="col-sm-6" sec:authorize="hasAuthority('USER')">
+				<input th:class="${attMarkError}?'form-control is-invalid':'form-control'"
+					type="text" name="attMark" th:value="${aplication}?*{attMark}" placeholder="Average score of the certificate"/>
+				<div th:if="${attMarkError}" class="invalid-feedback" th:text="${attMarkError}"></div>
+			</div>
+			<div class="col-sm-6" sec:authorize="hasAuthority('ADMIN')">
+				<input class="form-control" type="text" name="attMark" th:value="${aplication}?*{attMark}" readonly/>
+			</div>
+		</div>
+		<div class="form-group row" sec:authorize="hasAuthority('ADMIN')">
+			<label class="col-sm-2 col-form-label"><b>Rating score: </b></label>
+			<div class="col-sm-6">
+				<input class="form-control-plaintext" type="text" name="totalMark" th:value="${#numbers.formatDecimal(aplication.ratingList.totalMark, 3, 2)}" readonly/>
+			</div>
+		</div>
+		<div class="form-group row">
+			<label class="col-sm-2 col-form-label">supporting documents: </label>
+			<div class="col-sm-6">
+				<div class="custom-file">
+					<input th:class="${supportingDocumentError}?'custom-file-input is-invalid':'custom-file-input'"
+						type="file" id="files" name="files" multiple sec:authorize="hasAuthority('USER')"
+						onchange="$(this).next('.custom-file-label').addClass('selected').html(
+							$(this)[0].files.length == 0 ? 'Select files...' :
+								( $(this)[0].files.length == 1 ? $(this).val().split('\\').pop() : 
+									'Number of files: ' + $(this)[0].files.length ) )" />
+					<label for="customFile" class="custom-file-label text-muted text-truncate" sec:authorize="hasAuthority('USER')">Select files...</label>
+					<div th:if="${supportingDocumentError}" class="invalid-feedback" th:text="${supportingDocumentError}"></div>
+					<small class="form-text text-muted" id="filesList"></small>
+					<small th:if="${isEditForm}" class="form-text text-muted ml-4" th:each="supDoc: ${aplication?.supportingDocuments}">
+						<input class="form-check-input" type="checkbox" th:name="|delete${supDoc.id}|" title="Delete" sec:authorize="hasAuthority('USER')"/>
+						<label class="form-check-label">
+							<strong><a th:href="@{|${downloadURI}${supDoc.id}|}">[[${supDoc.fileName}]]</a></strong> ([[${supDoc.fileType}]]) - [[${supDoc.fileData.length}]] bytes
+						</label>
+					</small>
+				</div>
+			</div>
+		</div>
+		<div sec:authorize="hasAuthority('ADMIN')">
+			<div class="form-group row">
+				<div class="col-sm-2 mt-2">
+					<label class="form-check-label">
+						<input class="form-check-input" type="checkbox" name="accept" id="accept" onclick="showRejectionMessage()" />
+						<b>Accept Application</b>
+					</label>
+				</div>
+				<div class="col-sm-6">
+					<input class="form-control"	type="text" name="rejectionMessage" id="rejectionMessage" placeholder="Rejection reason" />
+				</div>
+			</div>
+		</div>
+		<button class="btn btn-primary my-3" type="submit">[[${isEditForm}?Save:Create]]</button>
+	</form>
+	<script>
+	function viewSubjectsBySpeciality() {
+		var speciality = $("select[name='speciality']").val();
+		var subjects = null;
+		
+		if (speciality != '') {	
+			jQuery.get('../subjectBySpeciality', {id: speciality}, function(data) {
+				if (data !== '') {
+					subjects = data;
+				}
+			}).done(
+				function() {
+					var formContent = '<h5>Exams Scores:</h5>';
+					jQuery.each(subjects, function(i, value) {
+						formContent +=
+							"<div class='form-group row'>"
+								+ "<label class='col-sm-2 col-form-label'>" + value.title + ": </label>"
+								+ "<div class='col-sm-6'>"
+									+ "<input class='form-control'"
+										+ "type='text' name='subject" + value.id + "' placeholder='" + value.title +"'/>"
+								+ "</div>"
+							+ "</div>"					
+					});
+
+					$('#subjects').html(formContent);
+				});
+		} else {
+			$('#subjects').html('');
+		}
+	}
+	
+	function handleFileSelect(event) {
+		var files = event.target.files;
+
+		var output = [];
+		for (var i = 0, file; file = files[i]; i++) {
+			output.push('<li><strong>', file.name, '</strong> (', file.type || 'n/a', ') - ', file.size, ' bytes</li>');
+		}
+
+		document.getElementById('filesList').innerHTML = '<ul>' + output.join('') + '</ul>';
+	}
+
+	document.getElementById('files').addEventListener('change',	handleFileSelect, false);	
+	
+	function showRejectionMessage() {
+		var checkbox = document.getElementById('accept');
+		var rejectionMessage = document.getElementById('rejectionMessage');
+		
+		var state = (checkbox.checked) ? "none" : "block";
+		rejectionMessage.style.display = state;
+	}
+	</script>
+</main>
+
+</html>
