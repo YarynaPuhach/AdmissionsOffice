@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      th:with="title='User Profile'">
+
+<th:block th:replace="fragments/common::commonPage(_, ~{::main})">
+    <main>
+        <h3>[[${title}]]</h3>
+        <div th:if="${message}" class="alert alert-danger" role="alert">
+            [[${message}]]
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
+            <div class="row">
+                <div class="col-sm-8">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Name: </label>
+                        <div class="col-sm-9">
+                            <input th:class="${firstNameError}?'form-control is-invalid':'form-control'"
+                                   type="text" name="firstName" th:value="${user}?${user.firstName}:${firstName}" placeholder="Name" />
+                            <div th:if="${firstNameError}" class="invalid-feedback" th:text="${firstNameError}"></div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Last name: </label>
+                        <div class="col-sm-9">
+                            <input th:class="${lastNameError}?'form-control is-invalid':'form-control'"
+                                   type="text" name="lastName" th:value="${user}?${user.lastName}:${lastName}" placeholder="Last name" />
+                            <div th:if="${lastNameError}" class="invalid-feedback" th:text="${lastNameError}"></div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Email: </label>
+                        <div class="col-sm-9">
+                            <input th:class="${emailError}?'form-control is-invalid':'form-control'"
+                                   type="text" name="email" th:value="${user}?${user.email}:${email}" placeholder="Email" />
+                            <div th:if="${emailError}" class="invalid-feedback" th:text="${emailError}"></div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">New Password: </label>
+                        <div class="col-sm-9">
+                            <input th:class="${passwordError}?'form-control is-invalid':'form-control'"
+                                   type="password" name="password" placeholder="Password" />
+                            <div th:if="${passwordError}" class="invalid-feedback" th:text="${passwordError}"></div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Confirm password: </label>
+                        <div class="col-sm-9">
+                            <input th:class="${confirmPasswordError}?'form-control is-invalid':'form-control'"
+                                   type="password" name="confirmPassword" placeholder="Confirm password" />
+                            <div th:if="${confirmPasswordError}" class="invalid-feedback" th:text="${confirmPasswordError}"></div>
+                        </div>
+                    </div>
+                    <div sec:authorize="hasAuthority('USER')">
+                        <h5 class="mt-4">Personal data</h5>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Date of Birth: </label>
+                            <div class="col-sm-9">
+                                <input th:class="${birthDateError}?'form-control is-invalid':'form-control'"
+                                       th:value="${user}?${user.applicant?.birthDate}:${birthDate}"
+                                       type="date" name="birthDate" placeholder="Date of Birth" />
+                                <div th:if="${birthDateError}" class="invalid-feedback" th:text="${birthDateError}"></div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">City: </label>
+                            <div class="col-sm-9">
+                                <input th:class="${cityError}?'form-control is-invalid':'form-control'"
+                                       th:value="${user}?${user.applicant?.city}:${city}"
+                                       type="text" name="city" placeholder="City" />
+                                <div th:if="${cityError}" class="invalid-feedback" th:text="${cityError}"></div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <input th:class="${schoolError}?'form-control is-invalid':'form-control'"
+                                   th:value="${user}?${user.applicant?.school}:${school}"
+                                   type="text" name="school" placeholder="School" />
+                            <div th:if="${schoolError}" class="invalid-feedback" th:text="${schoolError}"></div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Photo: </label>
+                        <div class="col-sm-9">
+                            <div class="custom-file">
+                                <input th:class="${photoError}?'custom-file-input is-invalid':'custom-file-input'"
+                                       type="file" id="customFile" name="photo"
+                                       onchange="$(this).next('.custom-file-label').addClass('selected').html($(this).val().split('\\').pop())" />
+                                <label for="customFile" class="custom-file-label text-truncate">Choose a photo</label>
+                                <div th:if="${photoError}" class="invalid-feedback" th:text="${photoError}"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4" th:if="${session.user?.applicant?.fileType?.contains('image')}">
+                <div>
+                    <img th:src="@{data:image/jpeg;base64,__${session.photo}__}" class="card-img"
+                         style="border-radius: 5%; box-shadow: 2px 2px 4px rgba(0, 0, 0, .25)">
+                </div>
+                <div class="form-group float-right">
+                    <input class="form-check-input" type="checkbox" name="removePhotoFlag" />
+                    <label class="form-check-label">Delete photo</label>
+                </div>
+            </div>
+            </div>
+
+            <button class="btn btn-primary my-3" type="submit">Save</button>
+            <div class="float-right mt-4"><a href="/main">Main</a></div>
+        </form>
+    </main>
+</th:block>
+
+</html>

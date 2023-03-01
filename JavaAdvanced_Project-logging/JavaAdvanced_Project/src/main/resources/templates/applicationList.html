@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	  xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	  th:with="title='Entrance applications'">
+
+<th:block th:replace="fragments/common::commonPage(_, ~{::main})">
+	<main>
+		<h3>[[${title}]]</h3>
+		<a th:if="${#lists.size(applications) < 5}" class="btn btn-primary mb-3" th:href="@{'/application/create'}">New application</a>
+		<div th:if="${#lists.size(applications) >= 5}" class="alert alert-info" role="alert">
+			You can apply for no more than 5 specialties!
+		</div>
+		<table class="table table-bordered">
+			<thead class="thead-light">
+			<tr>
+				<th scope="col"></th>
+				<th scope="col">Speciality</th>
+				<th scope="col">Subject scores</th>
+				<th scope="col">Application status</th>
+				<th scope="col"></th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr th:each="aplication, iterStat: ${applications}">
+				<th th:text="${iterStat.count}"/>
+				<td th:text="${aplication.speciality.title}"/>
+				<td>
+					<div th:each="znoMark : ${aplication.znoMarks}"
+						 th:text="|${znoMark.key.title}: ${znoMark.value} score.,|">
+					</div>
+					<div th:text="|Average score of the certificate: ${aplication.attMark} score.|"></div>
+				</td>
+				<td th:each="status : ${applicationsStatus}" th:if="${status.key.equals(aplication.id)}" th:switch="${status.value}">
+					<span th:case="'Awaiting processing'" class="badge badge-pill badge-warning">Awaiting processing</span>
+					<span th:case="'Rejected'" class="badge badge-pill badge-danger">Rejected</span>
+					<span th:case="'Accepted'" class="badge badge-pill badge-success">Accepted</span>
+				</td>
+				<td>
+						<span th:unless="${aplication.ratingList.accepted}">
+							<a th:href="@{'/application/edit?id=' + ${aplication.id}}">edit.</a>  |
+						</span>
+					<span th:unless="${aplication.speciality.recruitmentCompleted}">
+							<a th:href="@{'/application/delete?id=' + ${aplication.id}}">delete.</a>
+						</span>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+	</main>
+</th:block>
+
+</html>
