@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	  xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	  th:with="title='Страница приветствия'">
+
+<th:block th:replace="fragments/common::commonPage(_, ~{::main})">
+	<main>
+		<h1>Добро пожаловать!</h1>
+
+		<p class="lead">Нажмите <a th:href="@{/main}">сюда</a> для входа.</p>
+	</main>
+</th:block>
+
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	  xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-light bg-light">
+	<a class="navbar-brand" th:href="@{/}">Приёмная комиссия</a>
+	
+	<button class="navbar-toggler" type="button" data-toggle="collapse"
+		data-target="#navbarSupportedContent"
+		aria-controls="navbarSupportedContent" aria-expanded="false"
+		aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	</button>
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+		<ul class="navbar-nav mr-auto">
+			<li class="nav-item">
+				<a class="nav-link" th:href="@{/main}">Главная</a>
+			</li>
+			<li class="nav-item" sec:authorize="hasAuthority('ADMIN')">
+				<a class="nav-link" th:href="@{/user}">Пользователи</a>
+			</li>
+		</ul>
+		
+		<div class="navbar-nav nav-item" sec:authorize="isAuthenticated()">
+			<a class="nav-link" th:href="@{/user/profile}">[[${#authentication.principal.firstName}]] [[${#authentication.principal.lastName}]]</a>
+		</div>
+		<form class="form-inline" th:action="@{/logout}" method="post" sec:authorize="isAuthenticated()">
+			<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+			<button class="btn btn-outline-dark my-2 my-sm-0" type="submit">Выйти</button>
+		</form>
+	</div>
+</nav>
+
+</html>
