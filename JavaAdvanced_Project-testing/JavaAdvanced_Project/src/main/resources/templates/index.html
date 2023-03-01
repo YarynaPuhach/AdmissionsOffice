@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	  xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	  th:with="title=#{index}">
+
+<th:block th:replace="fragments/common::commonPage(_, ~{::main})">
+	<main>
+		<h1>[[#{index.welcome}]]!</h1>
+
+		<p class="lead">[[#{index.click}]] <a th:href="@{/main}">[[#{index.here}]]</a> [[#{index.enter}]].</p>
+	</main>
+</th:block>
+
+</html>
