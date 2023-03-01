@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	  xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	  th:with="title=#{subject}">
+
+<th:block th:replace="fragments/common::commonPage(_, ~{::main})">
+	<main>
+		<h3>[[${title}]]</h3>
+		<a class="btn btn-primary mb-3" th:href="@{'/subject/create'}">[[#{subject.new}]]</a>
+		<table class="table table-bordered">
+			<thead class="thead-light">
+				<tr>
+					<th scope="col">[[#{subject.id}]]</th>
+					<th scope="col">[[#{subject.title}]]</th>
+					<th scope="col"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="subject: ${subjects}">
+					<th th:text="${subject.id}"/>
+					<td th:text="${subject.title}"/>
+					<td>
+						<a th:href="@{'/subject/edit?id=' + ${subject.id}}">[[#{subject.edit}]]</a>
+						<span th:if="${subject.faculties.isEmpty()}">  |  
+							<a th:href="@{'/subject/delete?id=' + ${subject.id}}">[[#{subject.delete}]]</a>
+						</span>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</main>
+</th:block>
+
+</html>
