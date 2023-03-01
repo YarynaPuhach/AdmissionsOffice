@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	  xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+
+<main th:fragment="commonFaculty(title, path, isEditForm)">
+	<h3>[[${title}]]</h3>
+	<div th:if="${facultyExistsMessage}" class="alert alert-danger" role="alert">
+		[[#{facultyExistsMessage}]]
+	</div>
+	<form th:object="${faculty}" th:action="${path}" method="post">
+		<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+		<div class="form-group row">
+			<label class="col-sm-2 col-form-label">[[#{faculty.title}]]: </label>
+			<div class="col-sm-6">
+				<input th:class="${titleError}?'form-control is-invalid':'form-control'"
+					type="text" name="title" th:value="${faculty}?*{title}" th:placeholder="#{faculty.title}"/>
+				<div th:if="${titleError}" class="invalid-feedback" th:text="#{facultyTitleError}"></div>
+			</div>
+		</div>
+		<div class="form-check mt-3">[[#{faculty.subjects}]]:
+			<div th:each="subject: ${subjects}">
+				<input class="form-check-input" type="checkbox" th:name="${subject.id}" th:value="${subject.title}" th:checked="${isEditForm}?${faculty.examSubjects.contains(subject)}"/>
+				<label class="form-check-label">[[${subject.title}]]</label>
+			</div>
+		</div>			
+		<button class="btn btn-primary mt-3" type="submit">[[${isEditForm}?#{faculty.save}:#{faculty.create}]]</button>
+	</form>
+</main>
+
+</html>
