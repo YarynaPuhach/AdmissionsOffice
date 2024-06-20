@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	  xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	  th:with="title=#{aplication}">
+
+<th:block th:replace="fragments/common::commonPage(_, ~{::main})">
+	<main>
+		<h3>[[${title}]]</h3>
+		<a th:if="${#lists.size(applications) < 5}" class="btn btn-primary mb-3" th:href="@{'/application/create'}">[[#{aplication.new}]]</a>
+		<div th:if="${#lists.size(applications) >= 5}" class="alert alert-info" role="alert">
+        	[[#{aplication.message}]]!
+    	</div>
+		<table class="table table-bordered">
+			<thead class="thead-light">
+				<tr>
+					<th scope="col"></th>
+					<th scope="col">[[#{aplication.speciality}]]</th>
+					<th scope="col">[[#{aplication.marks}]]</th>
+					<th scope="col">[[#{aplication.status}]]</th>
+					<th scope="col"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="aplication, iterStat: ${applications}">
+					<th th:text="${iterStat.count}"/>
+					<td th:text="${aplication.speciality.title}"/>
+					<td>
+						<div th:each="znoMark : ${aplication.znoMarks}"
+							th:text="|${znoMark.key.title}: ${znoMark.value} #{aplication.points},|">
+						</div>
+						<div th:text="|#{aplication.grade_point_avg}: ${aplication.attMark} #{aplication.points}|"></div>
+					</td>
+					<td th:each="status : ${applicationsStatus}" th:if="${status.key.equals(aplication.id)}" th:switch="${status.value}">
+						<span th:case="'Awaiting processing'" class="badge badge-pill badge-warning">[[#{aplication.status.processing}]]</span>
+						<span th:case="'Rejected'" class="badge badge-pill badge-danger">[[#{aplication.status.rejected}]]</span>
+						<span th:case="'Accepted'" class="badge badge-pill badge-success">[[#{aplication.status.accepted}]]</span>
+					</td>
+					<td>
+						<span th:unless="${aplication.ratingList.accepted}">
+							<a th:href="@{'/application/edit?id=' + ${aplication.id}}">[[#{aplication.edit}]]</a>  |  
+						</span>
+						<span th:unless="${aplication.speciality.recruitmentCompleted}">
+							<a th:href="@{'/application/delete?id=' + ${aplication.id}}">[[#{aplication.delete}]]</a>
+						</span>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</main>
+</th:block>
+
+</html>

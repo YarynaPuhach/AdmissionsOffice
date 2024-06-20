@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	  xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	  th:with="title=#{user}">
+
+<th:block th:replace="fragments/common::commonPage(_, ~{::main})">
+	<main>
+		<h3>[[${title}]]</h3>
+		<table class="table table-bordered">
+			<thead class="thead-light">
+				<tr>
+					<th scope="col">[[#{user.id}]]</th>
+					<th scope="col">[[#{user.first_name}]]</th>
+					<th scope="col">[[#{user.last_name}]]</th>
+					<th scope="col">[[#{user.email}]]</th>
+					<th scope="col">[[#{user.is_active}]]</th>
+					<th scope="col">[[#{user.access_level}]]</th>
+					<th scope="col"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="user: ${users}">
+					<th th:text="${user.id}"/>
+					<td th:text="${user.firstName}"/>
+					<td th:text="${user.lastName}"/>
+					<td th:text="${user.email}"/>
+					<td th:text="${user.active}"/>
+					<td><span th:each="accessLevel, iterStat: ${user.accessLevels}" th:text="${!iterStat.last} ? ${accessLevel} + ', ' : ${accessLevel}"></span></td>
+					<td><a th:href="@{'/user/' + ${user.id}}">[[#{user.edit}]]</a></td>
+				</tr>
+			</tbody>
+		</table>
+	</main>
+</th:block>
+
+</html>

@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	  xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	  th:with="title=#{registration}">
+	  
+<th:block th:replace="fragments/common::commonPage(~{::script}, ~{::main})">
+	<script src='https://www.google.com/recaptcha/api.js'></script>
+	<main th:replace="fragments/login::commonLogin(${title}, @{/registration}, false)"/>
+</th:block>
+
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+	  xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	  th:with="title=#{speciality}">
+
+<th:block th:replace="fragments/common::commonPage(_, ~{::main})">
+	<main>
+		<h3>[[${title}]]</h3>
+		<a class="btn btn-primary mb-3" th:href="@{'/speciality/create'}">[[#{speciality.new}]]</a>
+		<table class="table table-bordered">
+			<thead class="thead-light">
+				<tr>
+					<th scope="col">[[#{speciality.id}]]</th>
+					<th scope="col">[[#{speciality.title}]]</th>
+					<th scope="col">[[#{speciality.faculty}]]</th>
+					<th scope="col">[[#{speciality.enrollment_plan}]]</th>
+					<th th:if="${!submittedApps.isEmpty()}" scope="col">[[#{speciality.submitted_apps}]]</th>
+					<th scope="col"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="speciality : ${specialities}">
+					<th th:text="${speciality.id}"/>
+					<td th:text="${speciality.title}"/>
+					<td th:text="${speciality.faculty.title}"/>
+					<td th:text="${speciality.enrollmentPlan}"/>
+					<td th:each="submittedApp : ${submittedApps}" th:if="${submittedApp.key.equals(speciality)}">
+						<span th:switch="${submittedApp.value}">
+							<span th:case="0">[[${submittedApp.value}]]</span>
+							<span th:case="*"><a th:href="@{'/ratingList/speciality?id=' + ${speciality.id}}">[[${submittedApp.value}]]</a></span>
+						</span>
+					<td>
+						<div th:if="${speciality.recruitmentCompleted == false}">
+							<a th:href="@{'/speciality/edit?id=' + ${speciality.id}}">[[#{speciality.edit}]]</a>
+							<span th:if="${speciality.applications.isEmpty()}">  |  
+								<a th:href="@{'/speciality/delete?id=' + ${speciality.id}}">[[#{speciality.delete}]]</a>
+							</span>
+							<div th:each="submittedApp : ${submittedApps}" th:if="${submittedApp.key.equals(speciality) AND submittedApp.value != 0}">
+								<a class="badge badge-pill badge-danger" th:href="@{'/speciality/complete?id=' + ${speciality.id}}">[[#{speciality.complete_recruitment}]]</a>
+							</div>
+						</div>
+						<div th:if="${speciality.recruitmentCompleted == true}">
+							<span class="badge badge-pill badge-success">[[#{speciality.recruitment_completed}]]!</span>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</main>
+</th:block>
+
+</html>

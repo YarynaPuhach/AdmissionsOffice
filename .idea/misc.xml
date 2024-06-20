@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
+  <component name="MavenProjectsManager">
+    <option name="originalFiles">
+      <list>
+        <option value="$PROJECT_DIR$/JavaAdvanced_Project-logging/JavaAdvanced_Project/pom.xml" />
+        <option value="$PROJECT_DIR$/JavaAdvanced_Project-testing/JavaAdvanced_Project/pom.xml" />
+        <option value="$PROJECT_DIR$/JavaAdvanced_Project-domain-dao/JavaAdvanced_Project/pom.xml" />
+        <option value="$PROJECT_DIR$/JavaAdvanced_Project-application/JavaAdvanced_Project/pom.xml" />
+        <option value="$PROJECT_DIR$/JavaAdvanced_Project-login-registration/JavaAdvanced_Project/pom.xml" />
+        <option value="$PROJECT_DIR$/JavaAdvanced_Project-internationalization/JavaAdvanced_Project/pom.xml" />
+        <option value="$PROJECT_DIR$/pom.xml" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_21" default="true" project-jdk-name="21" project-jdk-type="JavaSDK" />
+</project>
